@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Sécuriser, Scanner et Surveiller sur Parrot OS</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #0D0D0D;
+      color: #00FF00;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    header {
+      background-color: #111;
+      color: #00FF00;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #00FF00;
+    }
+    .container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #00FF00;
+      margin-top: 40px;
+      text-transform: uppercase;
+      font-size: 1.8rem;
+      position: relative;
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 2px;
+      background-color: #00FF00;
+      bottom: -10px;
+      left: 0;
+    }
+    pre {
+      background-color: #111;
+      padding: 15px;
+      border-radius: 5px;
+      color: #00FF00;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-x: auto;
+      box-shadow: 0 0 10px #00FF00;
+    }
+    .section {
+      margin-bottom: 40px;
+      animation: fadeInUp 1s ease;
+    }
+    footer {
+      background-color: #111;
+      color: #00FF00;
+      text-align: center;
+      padding: 15px 0;
+      border-top: 2px solid #00FF00;
+      position: relative;
+      width: 100%;
+      bottom: 0;
+    }
+    /* Keyframes for animations */
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 1.5rem;
+      }
+      pre {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Cheat Sheet 2 @ml0ck - Linux Parrot OS</h1>
+  <p>Sécuriser, Scanner et Surveiller sur Parrot OS</p>
+</header>
+
+<div class="container">
+
+  <!-- Section 1: Créer un serveur SSH -->
+  <div class="section">
+    <h2>1. Créer un serveur SSH</h2>
+    <p>SSH (Secure Shell) est un protocole réseau crypté permettant de se connecter à un serveur distant en toute sécurité. Voici comment installer et configurer SSH :</p>
+    <pre>
+# Mise à jour des dépôts et installation de SSH
+sudo apt update
+sudo apt install openssh-server
+
+# Vérifier l'état du service SSH
+sudo systemctl status ssh
+
+# Démarrer le service SSH
+sudo systemctl start ssh
+
+# Activer SSH au démarrage
+sudo systemctl enable ssh
+    </pre>
+  </div>
+
+  <!-- Section 2: Sécuriser le serveur SSH -->
+  <div class="section">
+    <h2>2. Sécuriser le serveur SSH</h2>
+    <p>Pour protéger votre serveur SSH des attaques courantes (brute force, scans de port, etc.), voici quelques pratiques recommandées :</p>
+    <pre>
+# Modifier le fichier de configuration SSH
+sudo nano /etc/ssh/sshd_config
+
+# 1. Changer le port par défaut (22) pour un autre, comme 2222
+Port 2222
+
+# 2. Désactiver l'authentification par mot de passe
+PasswordAuthentication no
+
+# 3. Activer l'authentification par clé publique (Public Key Authentication)
+PubkeyAuthentication yes
+    </pre>
+    <p>Pensez aussi à utiliser <strong>Fail2Ban</strong> pour bannir les IPs ayant un comportement suspect :</p>
+    <pre>
+# Installer Fail2Ban pour bannir automatiquement les IPs malveillantes
+sudo apt install fail2ban
+    </pre>
+  </div>
+
+  <!-- Section 3: Se connecter à un serveur distant -->
+  <div class="section">
+    <h2>3. Se connecter à un serveur distant</h2>
+    <p>Pour se connecter à un serveur distant via SSH, voici la commande basique :</p>
+    <pre>
+# Connexion à un serveur distant via SSH
+ssh user@ip_address
+
+# Si le serveur utilise un port différent
+ssh -p 2222 user@ip_address
+    </pre>
+    <p>Pour ajouter une clé SSH locale à un serveur distant et éviter de saisir le mot de passe :</p>
+    <pre>
+# Générer une paire de clés SSH (sans mot de passe pour une connexion automatique)
+ssh-keygen -t rsa
+
+# Copier la clé publique vers le serveur distant
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@ip_address
+    </pre>
+  </div>
+
+  <!-- Section 4: Scanner les IPs et sous-domaines -->
+  <div class="section">
+    <h2>4. Scanner les IPs et sous-domaines d'une URL</h2>
+    <p>Pour effectuer des analyses réseau, voici quelques outils essentiels et comment les utiliser :</p>
+    <pre>
+# Utiliser Nmap pour scanner les ports ouverts d'une IP
+nmap -sS -Pn ip_address
+
+# Options avancées de Nmap
+nmap -A -T4 ip_address   # Scan d'agressivité modérée, avec détection OS, versions des services, et traceroute.
+
+# Utiliser Sublist3r pour trouver les sous-domaines d'un domaine
+sublist3r -d example.com
+
+# Utiliser un WHOIS pour obtenir des infos sur le propriétaire d'une IP/Domaine
+whois example.com
+    </pre>
+  </div>
+
+  <!-- Section 5: Surveiller votre propre serveur -->
+  <div class="section">
+    <h2>5. Surveiller son serveur/sa machine</h2>
+    <pre>
+# Utiliser htop pour surveiller les processus en temps réel
+htop
+
+# Vérifier l'utilisation du disque avec df
+df -h   # Affichage en taille lisible des partitions disque
+
+# Utilisation de la RAM et du swap
+free -h
+    </pre>
+    <pre>
+# Vérifier les connexions réseau actives et les ports utilisés
+netstat -tulnp
+
+# Surveiller en temps réel les paquets réseau (sur une interface spécifique)
+sudo tcpdump -i eth0
+
+# Lister toutes les connexions actives avec leur statut
+ss -tuln
+    </pre>
+    <pre>
+# Surveiller les logs SSH pour repérer les connexions suspectes
+tail -f /var/log/auth.log
+
+# Consulter les logs du système
+journalctl -xe
+    </pre>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2024 Cheat Sheet @ml0ck - Tous droits réservés</p>
+</footer>
+
+<!-- JavaScript file for dynamic animations -->
+<script src="scripts.js"></script>
+
+</body>
+</html>
